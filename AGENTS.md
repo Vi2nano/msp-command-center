@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+# Architecture rules
+- Console pages live under src/routes/_authenticated/ and query via the browser client with RLS — tenant isolation is enforced in the database (is_staff/current_tenant).
+- First signup is auto-granted msp_admin in handle_new_user — bootstraps the MSP owner without manual SQL.
