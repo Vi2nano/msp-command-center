@@ -32,7 +32,7 @@ export const Route = createFileRoute("/api/public/agent/checkin")({
         if (!device) return json({ error: "unauthorized" }, 401);
         const parsed = Body.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return json({ error: "invalid body" }, 400);
-        const m = parsed.data;
+        const m = Object.fromEntries(Object.entries(parsed.data).filter(([, v]) => v !== undefined)) as { cpu_percent: number; memory_percent: number; disk_percent: number } & Record<string, string | number>;
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         const hot = m.cpu_percent > 95 || m.memory_percent > 95 || m.disk_percent > 90;
