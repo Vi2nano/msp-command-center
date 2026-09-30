@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as PlatformRouteRouteImport } from './routes/_platform/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
@@ -22,6 +23,9 @@ import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedTimeRouteImport } from './routes/_authenticated/time'
 import { Route as AuthenticatedDevicesIdRouteImport } from './routes/_authenticated/devices.$id'
 import { Route as AuthenticatedTicketsIdRouteImport } from './routes/_authenticated/tickets.$id'
+import { Route as PlatformPlatformIndexRouteImport } from './routes/_platform/platform/index'
+import { Route as PlatformPlatformWorkspacesIndexRouteImport } from './routes/_platform/platform/workspaces.index'
+import { Route as PlatformPlatformWorkspacesIdRouteImport } from './routes/_platform/platform/workspaces.$id'
 import { Route as ApiPublicAgentCheckinRouteImport } from './routes/api/public/agent/checkin'
 import { Route as ApiPublicAgentEnrollRouteImport } from './routes/api/public/agent/enroll'
 import { Route as ApiPublicAgentResultRouteImport } from './routes/api/public/agent/result'
@@ -33,6 +37,10 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlatformRouteRoute = PlatformRouteRouteImport.update({
+  id: '/_platform',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -90,6 +98,23 @@ const AuthenticatedTicketsIdRoute = AuthenticatedTicketsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedTicketsRoute,
 } as any)
+const PlatformPlatformIndexRoute = PlatformPlatformIndexRouteImport.update({
+  id: '/platform/',
+  path: '/platform/',
+  getParentRoute: () => PlatformRouteRoute,
+} as any)
+const PlatformPlatformWorkspacesIndexRoute =
+  PlatformPlatformWorkspacesIndexRouteImport.update({
+    id: '/platform/workspaces/',
+    path: '/platform/workspaces/',
+    getParentRoute: () => PlatformRouteRoute,
+  } as any)
+const PlatformPlatformWorkspacesIdRoute =
+  PlatformPlatformWorkspacesIdRouteImport.update({
+    id: '/platform/workspaces/$id',
+    path: '/platform/workspaces/$id',
+    getParentRoute: () => PlatformRouteRoute,
+  } as any)
 const ApiPublicAgentCheckinRoute = ApiPublicAgentCheckinRouteImport.update({
   id: '/api/public/agent/checkin',
   path: '/api/public/agent/checkin',
@@ -119,9 +144,12 @@ export interface FileRoutesByFullPath {
   '/time': typeof AuthenticatedTimeRoute
   '/devices/$id': typeof AuthenticatedDevicesIdRoute
   '/tickets/$id': typeof AuthenticatedTicketsIdRoute
+  '/platform/': typeof PlatformPlatformIndexRoute
+  '/platform/workspaces/$id': typeof PlatformPlatformWorkspacesIdRoute
   '/api/public/agent/checkin': typeof ApiPublicAgentCheckinRoute
   '/api/public/agent/enroll': typeof ApiPublicAgentEnrollRoute
   '/api/public/agent/result': typeof ApiPublicAgentResultRoute
+  '/platform/workspaces/': typeof PlatformPlatformWorkspacesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -136,14 +164,18 @@ export interface FileRoutesByTo {
   '/time': typeof AuthenticatedTimeRoute
   '/devices/$id': typeof AuthenticatedDevicesIdRoute
   '/tickets/$id': typeof AuthenticatedTicketsIdRoute
+  '/platform': typeof PlatformPlatformIndexRoute
+  '/platform/workspaces/$id': typeof PlatformPlatformWorkspacesIdRoute
   '/api/public/agent/checkin': typeof ApiPublicAgentCheckinRoute
   '/api/public/agent/enroll': typeof ApiPublicAgentEnrollRoute
   '/api/public/agent/result': typeof ApiPublicAgentResultRoute
+  '/platform/workspaces': typeof PlatformPlatformWorkspacesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_platform': typeof PlatformRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
@@ -155,9 +187,12 @@ export interface FileRoutesById {
   '/_authenticated/time': typeof AuthenticatedTimeRoute
   '/_authenticated/devices/$id': typeof AuthenticatedDevicesIdRoute
   '/_authenticated/tickets/$id': typeof AuthenticatedTicketsIdRoute
+  '/_platform/platform/': typeof PlatformPlatformIndexRoute
+  '/_platform/platform/workspaces/$id': typeof PlatformPlatformWorkspacesIdRoute
   '/api/public/agent/checkin': typeof ApiPublicAgentCheckinRoute
   '/api/public/agent/enroll': typeof ApiPublicAgentEnrollRoute
   '/api/public/agent/result': typeof ApiPublicAgentResultRoute
+  '/_platform/platform/workspaces/': typeof PlatformPlatformWorkspacesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -174,9 +209,12 @@ export interface FileRouteTypes {
     | '/time'
     | '/devices/$id'
     | '/tickets/$id'
+    | '/platform/'
+    | '/platform/workspaces/$id'
     | '/api/public/agent/checkin'
     | '/api/public/agent/enroll'
     | '/api/public/agent/result'
+    | '/platform/workspaces/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -191,13 +229,17 @@ export interface FileRouteTypes {
     | '/time'
     | '/devices/$id'
     | '/tickets/$id'
+    | '/platform'
+    | '/platform/workspaces/$id'
     | '/api/public/agent/checkin'
     | '/api/public/agent/enroll'
     | '/api/public/agent/result'
+    | '/platform/workspaces'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_platform'
     | '/auth'
     | '/_authenticated/alerts'
     | '/_authenticated/billing'
@@ -209,14 +251,18 @@ export interface FileRouteTypes {
     | '/_authenticated/time'
     | '/_authenticated/devices/$id'
     | '/_authenticated/tickets/$id'
+    | '/_platform/platform/'
+    | '/_platform/platform/workspaces/$id'
     | '/api/public/agent/checkin'
     | '/api/public/agent/enroll'
     | '/api/public/agent/result'
+    | '/_platform/platform/workspaces/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  PlatformRouteRoute: typeof PlatformRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiPublicAgentCheckinRoute: typeof ApiPublicAgentCheckinRoute
   ApiPublicAgentEnrollRoute: typeof ApiPublicAgentEnrollRoute
@@ -237,6 +283,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_platform': {
+      id: '/_platform'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PlatformRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -316,6 +369,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTicketsIdRouteImport
       parentRoute: typeof AuthenticatedTicketsRoute
     }
+    '/_platform/platform/': {
+      id: '/_platform/platform/'
+      path: '/platform'
+      fullPath: '/platform/'
+      preLoaderRoute: typeof PlatformPlatformIndexRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/platform/workspaces/': {
+      id: '/_platform/platform/workspaces/'
+      path: '/platform/workspaces'
+      fullPath: '/platform/workspaces/'
+      preLoaderRoute: typeof PlatformPlatformWorkspacesIndexRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
+    '/_platform/platform/workspaces/$id': {
+      id: '/_platform/platform/workspaces/$id'
+      path: '/platform/workspaces/$id'
+      fullPath: '/platform/workspaces/$id'
+      preLoaderRoute: typeof PlatformPlatformWorkspacesIdRouteImport
+      parentRoute: typeof PlatformRouteRoute
+    }
     '/api/public/agent/checkin': {
       id: '/api/public/agent/checkin'
       path: '/api/public/agent/checkin'
@@ -387,9 +461,26 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface PlatformRouteRouteChildren {
+  PlatformPlatformIndexRoute: typeof PlatformPlatformIndexRoute
+  PlatformPlatformWorkspacesIdRoute: typeof PlatformPlatformWorkspacesIdRoute
+  PlatformPlatformWorkspacesIndexRoute: typeof PlatformPlatformWorkspacesIndexRoute
+}
+
+const PlatformRouteRouteChildren: PlatformRouteRouteChildren = {
+  PlatformPlatformIndexRoute: PlatformPlatformIndexRoute,
+  PlatformPlatformWorkspacesIdRoute: PlatformPlatformWorkspacesIdRoute,
+  PlatformPlatformWorkspacesIndexRoute: PlatformPlatformWorkspacesIndexRoute,
+}
+
+const PlatformRouteRouteWithChildren = PlatformRouteRoute._addFileChildren(
+  PlatformRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  PlatformRouteRoute: PlatformRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiPublicAgentCheckinRoute: ApiPublicAgentCheckinRoute,
   ApiPublicAgentEnrollRoute: ApiPublicAgentEnrollRoute,
