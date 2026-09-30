@@ -2,7 +2,10 @@
   Meridian RMM Windows agent
   Install (elevated PowerShell):
     .\meridian-agent.ps1 -Install -Server https://your-app-url -EnrollmentKey <key>
-  Runs every minute as SYSTEM via a scheduled task, reports health and runs queued scripts.
+  Monitoring/check-in/queued-script bootstrap agent: runs every minute as SYSTEM
+  via a scheduled task, reports health and runs queued scripts. Not a remote desktop
+  or VNC agent; that will require a native Windows service, an interactive user-session
+  helper and outbound signaling/relay instead of inbound VNC ports.
 #>
 param(
   [switch]$Install,

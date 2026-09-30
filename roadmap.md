@@ -3,7 +3,7 @@
 - [x] Sign-in, console shell, overview, clients, devices, alerts
 - [x] PSA: tickets (staff + client portal), comments/internal notes, time tracking
 - [x] Client per-seat invoicing (rates, draft invoices from seats + billable hours)
-- [x] Windows PowerShell agent: enroll, 1-min check-in, metrics, auto alerts
+- [x] Windows PowerShell bootstrap agent (`public/agent/meridian-agent.ps1`): enroll, 1-min monitoring/check-in, metrics, auto alerts (not remote desktop or VNC)
 - [x] Remote scripts: library, queue per device, agent runs and reports output
 - [x] Multi-MSP accounts: `msp_workspaces` + `msp_workspace_members`; client tenants, scripts and integrations belong to a workspace and all staff RLS is workspace-scoped (migration `0003_msp_workspaces`)
 - [x] `super_admin` platform-owner role and platform console at `/platform/workspaces` (list, create, edit, members, usage vs contracted seats/agents)
@@ -12,10 +12,12 @@
 - [ ] Entitlement enforcement (suspend/limit workspaces that are unpaid or over contract)
 - [ ] MSP self-serve signup that creates its own workspace (today the platform owner creates workspaces and adds members)
 - [ ] Workspace-scoped ticket/invoice numbering (numbers currently come from global sequences)
-- [ ] Replace scheduled-task agent with native Windows service; remote-session helper, signaling and audit
+- [ ] Replace scheduled-task agent with a native Windows service; add an interactive user-session helper, remote-session signaling and audit
 - [ ] Signed scripts, agent updates, and privileged job policies
 - [ ] Linux agent
 - [ ] Client user invites & team management
+
+Remote desktop will require the native service and interactive user-session helper, with outbound signaling/relay connections rather than inbound VNC ports. The current PowerShell agent only checks in and executes queued scripts; it does not provide remote control.
 
 ## Multi-MSP rollout notes (migration 0003)
 - **Backfill:** before 0003 there was exactly one MSP (every admin/technician saw every tenant). The migration creates one
