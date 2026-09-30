@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatchRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Meter, PageHeader, StatusBadge } from "@/lib/ui-bits";
+import { Meter, PageHeader, StatusBadge, effectiveStatus } from "@/lib/ui-bits";
 import { useRoles } from "./route";
 
 export const Route = createFileRoute("/_authenticated/devices")({
@@ -18,11 +18,18 @@ export const Route = createFileRoute("/_authenticated/devices")({
 });
 
 function Devices() {
+  const match = useMatchRoute();
+  if (match({ to: "/devices/$id" })) return <Outlet />;
+  return <DeviceList />;
+}
+
+function DeviceList() {
   const qc = useQueryClient();
   const { data: r } = useRoles();
   const [q, setQ] = useState("");
   const { data } = useQuery({
     queryKey: ["devices"],
+    refetchInterval: 30000,
     queryFn: async () => (await supabase.from("devices").select("*, tenants(name)").order("hostname")).data ?? [],
   });
   const { data: tenants } = useQuery({
@@ -74,9 +81,9 @@ function Devices() {
           <TableBody>
             {rows.map((d) => (
               <TableRow key={d.id}>
-                <TableCell><div className="font-mono text-sm">{d.hostname}</div><div className="text-xs text-muted-foreground">{d.os} · {d.ip_address}</div></TableCell>
+                <TableCell><Link to="/devices/$id" params={{ id: d.id }} className="font-mono text-sm text-primary hover:underline">{d.hostname}</Link><div className="text-xs text-muted-foreground">{d.os} · {d.ip_address}</div></TableCell>
                 <TableCell>{d.tenants?.name}</TableCell>
-                <TableCell><StatusBadge value={d.status} /></TableCell>
+                <TableCell><StatusBadge value={effectiveStatus(d)} /></TableCell>
                 <TableCell><Meter v={Number(d.cpu_percent)} /></TableCell>
                 <TableCell><Meter v={Number(d.memory_percent)} /></TableCell>
                 <TableCell><Meter v={Number(d.disk_percent)} /></TableCell>
