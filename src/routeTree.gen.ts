@@ -16,6 +16,9 @@ import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDevicesRouteImport } from './routes/_authenticated/devices'
+import { Route as ApiPublicAgentCheckinRouteImport } from './routes/api/public/agent/checkin'
+import { Route as ApiPublicAgentEnrollRouteImport } from './routes/api/public/agent/enroll'
+import { Route as ApiPublicAgentResultRouteImport } from './routes/api/public/agent/result'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,6 +54,21 @@ const AuthenticatedDevicesRoute = AuthenticatedDevicesRouteImport.update({
   path: '/devices',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicAgentCheckinRoute = ApiPublicAgentCheckinRouteImport.update({
+  id: '/api/public/agent/checkin',
+  path: '/api/public/agent/checkin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAgentEnrollRoute = ApiPublicAgentEnrollRouteImport.update({
+  id: '/api/public/agent/enroll',
+  path: '/api/public/agent/enroll',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAgentResultRoute = ApiPublicAgentResultRouteImport.update({
+  id: '/api/public/agent/result',
+  path: '/api/public/agent/result',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +77,9 @@ export interface FileRoutesByFullPath {
   '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/devices': typeof AuthenticatedDevicesRoute
+  '/api/public/agent/checkin': typeof ApiPublicAgentCheckinRoute
+  '/api/public/agent/enroll': typeof ApiPublicAgentEnrollRoute
+  '/api/public/agent/result': typeof ApiPublicAgentResultRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +88,9 @@ export interface FileRoutesByTo {
   '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/devices': typeof AuthenticatedDevicesRoute
+  '/api/public/agent/checkin': typeof ApiPublicAgentCheckinRoute
+  '/api/public/agent/enroll': typeof ApiPublicAgentEnrollRoute
+  '/api/public/agent/result': typeof ApiPublicAgentResultRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,12 +101,33 @@ export interface FileRoutesById {
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/devices': typeof AuthenticatedDevicesRoute
+  '/api/public/agent/checkin': typeof ApiPublicAgentCheckinRoute
+  '/api/public/agent/enroll': typeof ApiPublicAgentEnrollRoute
+  '/api/public/agent/result': typeof ApiPublicAgentResultRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/alerts' | '/clients' | '/dashboard' | '/devices'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/alerts'
+    | '/clients'
+    | '/dashboard'
+    | '/devices'
+    | '/api/public/agent/checkin'
+    | '/api/public/agent/enroll'
+    | '/api/public/agent/result'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/alerts' | '/clients' | '/dashboard' | '/devices'
+  to:
+    | '/'
+    | '/auth'
+    | '/alerts'
+    | '/clients'
+    | '/dashboard'
+    | '/devices'
+    | '/api/public/agent/checkin'
+    | '/api/public/agent/enroll'
+    | '/api/public/agent/result'
   id:
     | '__root__'
     | '/'
@@ -92,12 +137,18 @@ export interface FileRouteTypes {
     | '/_authenticated/clients'
     | '/_authenticated/dashboard'
     | '/_authenticated/devices'
+    | '/api/public/agent/checkin'
+    | '/api/public/agent/enroll'
+    | '/api/public/agent/result'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicAgentCheckinRoute: typeof ApiPublicAgentCheckinRoute
+  ApiPublicAgentEnrollRoute: typeof ApiPublicAgentEnrollRoute
+  ApiPublicAgentResultRoute: typeof ApiPublicAgentResultRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -151,6 +202,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDevicesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/agent/checkin': {
+      id: '/api/public/agent/checkin'
+      path: '/api/public/agent/checkin'
+      fullPath: '/api/public/agent/checkin'
+      preLoaderRoute: typeof ApiPublicAgentCheckinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agent/enroll': {
+      id: '/api/public/agent/enroll'
+      path: '/api/public/agent/enroll'
+      fullPath: '/api/public/agent/enroll'
+      preLoaderRoute: typeof ApiPublicAgentEnrollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agent/result': {
+      id: '/api/public/agent/result'
+      path: '/api/public/agent/result'
+      fullPath: '/api/public/agent/result'
+      preLoaderRoute: typeof ApiPublicAgentResultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -175,6 +247,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicAgentCheckinRoute: ApiPublicAgentCheckinRoute,
+  ApiPublicAgentEnrollRoute: ApiPublicAgentEnrollRoute,
+  ApiPublicAgentResultRoute: ApiPublicAgentResultRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
