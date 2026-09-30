@@ -5,3 +5,4 @@
 - [ ] Per-seat billing (payments)
 - [ ] Real endpoint agent / RMM integrations (needs provider choice)
 - [ ] Client user invites & team management
+- [ ] Remote scripts: agent pulls queued PowerShell scripts from console, runs them, reports output
