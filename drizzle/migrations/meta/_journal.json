@@ -15,6 +15,13 @@
       "when": 1790761163288,
       "tag": "0001_first_user_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790761668071,
+      "tag": "0002_tickets_time_agent_billing",
+      "breakpoints": true
     }
   ]
 }
