@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity, Bell, Building2, LayoutDashboard, LogOut, Monitor } from "lucide-react";
+import { Activity, Bell, Building2, Clock, LayoutDashboard, LogOut, Monitor, Receipt, Terminal, Ticket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -28,10 +28,14 @@ export function useRoles() {
 
 const nav = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { to: "/clients", label: "Clients", icon: Building2 },
+  { to: "/clients", label: "Clients", icon: Building2, staff: true },
   { to: "/devices", label: "Devices", icon: Monitor },
   { to: "/alerts", label: "Alerts", icon: Bell },
-] as const;
+  { to: "/tickets", label: "Tickets", icon: Ticket },
+  { to: "/time", label: "Time", icon: Clock, staff: true },
+  { to: "/scripts", label: "Scripts", icon: Terminal, staff: true },
+  { to: "/billing", label: "Billing", icon: Receipt },
+] as { to: string; label: string; icon: typeof Bell; staff?: boolean }[];
 
 function Shell() {
   const { user } = Route.useRouteContext();
@@ -53,8 +57,8 @@ function Shell() {
           <Activity className="h-5 w-5 text-primary" /> Meridian
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {nav.filter((n) => n.to !== "/clients" || r?.isStaff).map((n) => (
-            <Link key={n.to} to={n.to}
+          {nav.filter((n) => !n.staff || r?.isStaff).map((n) => (
+            <Link key={n.to} to={n.to as "/dashboard"}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
               activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}>
               <n.icon className="h-4 w-4" /> {n.label}

@@ -21,7 +21,24 @@ const tone: Record<string, string> = {
   open: "bg-destructive text-destructive-foreground",
   acknowledged: "bg-warning text-warning-foreground",
   resolved: "bg-success text-success-foreground",
+  new: "bg-primary text-primary-foreground",
+  pending: "bg-warning text-warning-foreground",
+  closed: "bg-muted text-muted-foreground",
+  queued: "bg-secondary text-secondary-foreground",
+  running: "bg-primary text-primary-foreground",
+  completed: "bg-success text-success-foreground",
+  failed: "bg-destructive text-destructive-foreground",
+  draft: "bg-muted text-muted-foreground",
+  sent: "bg-primary text-primary-foreground",
+  paid: "bg-success text-success-foreground",
+  void: "bg-muted text-muted-foreground",
 };
+
+/** Agent devices that haven't checked in for 5 minutes are shown offline. */
+export function effectiveStatus(d: { status: string; source: string; last_seen: string | null }) {
+  if (d.source === "agent" && (!d.last_seen || Date.now() - new Date(d.last_seen).getTime() > 5 * 60_000)) return "offline";
+  return d.status;
+}
 
 export function StatusBadge({ value }: { value: string }) {
   return <Badge className={`font-mono text-[10px] uppercase ${tone[value] ?? ""}`}>{value}</Badge>;

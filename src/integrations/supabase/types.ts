@@ -64,6 +64,8 @@ export type Database = {
       }
       devices: {
         Row: {
+          agent_token_hash: string | null
+          agent_version: string | null
           cpu_percent: number
           created_at: string
           device_type: string
@@ -79,8 +81,11 @@ export type Database = {
           source: string
           status: Database["public"]["Enums"]["device_status"]
           tenant_id: string
+          uptime_seconds: number | null
         }
         Insert: {
+          agent_token_hash?: string | null
+          agent_version?: string | null
           cpu_percent?: number
           created_at?: string
           device_type?: string
@@ -96,8 +101,11 @@ export type Database = {
           source?: string
           status?: Database["public"]["Enums"]["device_status"]
           tenant_id: string
+          uptime_seconds?: number | null
         }
         Update: {
+          agent_token_hash?: string | null
+          agent_version?: string | null
           cpu_percent?: number
           created_at?: string
           device_type?: string
@@ -113,6 +121,7 @@ export type Database = {
           source?: string
           status?: Database["public"]["Enums"]["device_status"]
           tenant_id?: string
+          uptime_seconds?: number | null
         }
         Relationships: [
           {
@@ -154,6 +163,59 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          created_at: string
+          hourly_rate: number
+          hours: number
+          id: string
+          number: number
+          period_end: string
+          period_start: string
+          price_per_seat: number
+          seats: number
+          status: string
+          tenant_id: string
+          total: number
+        }
+        Insert: {
+          created_at?: string
+          hourly_rate?: number
+          hours?: number
+          id?: string
+          number?: number
+          period_end: string
+          period_start: string
+          price_per_seat?: number
+          seats?: number
+          status?: string
+          tenant_id: string
+          total?: number
+        }
+        Update: {
+          created_at?: string
+          hourly_rate?: number
+          hours?: number
+          id?: string
+          number?: number
+          period_end?: string
+          period_start?: string
+          price_per_seat?: number
+          seats?: number
+          status?: string
+          tenant_id?: string
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -186,38 +248,289 @@ export type Database = {
           },
         ]
       }
+      script_runs: {
+        Row: {
+          body: string
+          completed_at: string | null
+          created_at: string
+          device_id: string
+          exit_code: number | null
+          id: string
+          output: string | null
+          queued_by: string | null
+          script_id: string | null
+          script_name: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          body: string
+          completed_at?: string | null
+          created_at?: string
+          device_id: string
+          exit_code?: number | null
+          id?: string
+          output?: string | null
+          queued_by?: string | null
+          script_id?: string | null
+          script_name: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          body?: string
+          completed_at?: string | null
+          created_at?: string
+          device_id?: string
+          exit_code?: number | null
+          id?: string
+          output?: string | null
+          queued_by?: string | null
+          script_id?: string | null
+          script_name?: string
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "script_runs_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_runs_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scripts: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       tenants: {
         Row: {
           created_at: string
+          enrollment_key: string
+          hourly_rate: number
           id: string
           industry: string | null
           name: string
           plan: string
+          price_per_seat: number
           primary_contact: string | null
           seats: number
           slug: string
         }
         Insert: {
           created_at?: string
+          enrollment_key?: string
+          hourly_rate?: number
           id?: string
           industry?: string | null
           name: string
           plan?: string
+          price_per_seat?: number
           primary_contact?: string | null
           seats?: number
           slug: string
         }
         Update: {
           created_at?: string
+          enrollment_key?: string
+          hourly_rate?: number
           id?: string
           industry?: string | null
           name?: string
           plan?: string
+          price_per_seat?: number
           primary_contact?: string | null
           seats?: number
           slug?: string
         }
         Relationships: []
+      }
+      ticket_comments: {
+        Row: {
+          author_id: string
+          author_name: string | null
+          body: string
+          created_at: string
+          id: string
+          internal: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id?: string
+          author_name?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          internal?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          internal?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_comments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          device_id: string | null
+          id: string
+          number: number
+          priority: string
+          status: string
+          subject: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          device_id?: string | null
+          id?: string
+          number?: number
+          priority?: string
+          status?: string
+          subject: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          device_id?: string | null
+          id?: string
+          number?: number
+          priority?: string
+          status?: string
+          subject?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_entries: {
+        Row: {
+          billable: boolean
+          created_at: string
+          id: string
+          invoice_id: string | null
+          minutes: number
+          notes: string | null
+          tenant_id: string
+          ticket_id: string | null
+          user_id: string
+          user_name: string | null
+          work_date: string
+        }
+        Insert: {
+          billable?: boolean
+          created_at?: string
+          id?: string
+          invoice_id?: string | null
+          minutes: number
+          notes?: string | null
+          tenant_id: string
+          ticket_id?: string | null
+          user_id?: string
+          user_name?: string | null
+          work_date?: string
+        }
+        Update: {
+          billable?: boolean
+          created_at?: string
+          id?: string
+          invoice_id?: string | null
+          minutes?: number
+          notes?: string | null
+          tenant_id?: string
+          ticket_id?: string | null
+          user_id?: string
+          user_name?: string | null
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

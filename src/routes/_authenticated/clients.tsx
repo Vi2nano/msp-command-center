@@ -59,7 +59,7 @@ function Clients() {
       </PageHeader>
       <div className="rounded-lg border border-border bg-card">
         <Table>
-          <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Industry</TableHead><TableHead>Contact</TableHead><TableHead>Plan</TableHead><TableHead className="text-right">Seats</TableHead><TableHead className="text-right">Devices</TableHead></TableRow></TableHeader>
+          <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Industry</TableHead><TableHead>Contact</TableHead><TableHead>Plan</TableHead><TableHead className="text-right">Seats</TableHead><TableHead className="text-right">Devices</TableHead><TableHead /></TableRow></TableHeader>
           <TableBody>
             {(data ?? []).map((t) => (
               <TableRow key={t.id}>
@@ -69,12 +69,33 @@ function Clients() {
                 <TableCell className="font-mono text-xs uppercase">{t.plan}</TableCell>
                 <TableCell className="text-right font-mono">{t.seats}</TableCell>
                 <TableCell className="text-right font-mono">{(t.devices as unknown as { count: number }[])?.[0]?.count ?? 0}</TableCell>
+                <TableCell className="text-right"><DeployAgent name={t.name} enrollmentKey={t.enrollment_key} /></TableCell>
               </TableRow>
             ))}
-            {!data?.length && <TableRow><TableCell colSpan={6} className="py-8 text-center text-muted-foreground">No clients yet.</TableCell></TableRow>}
+            {!data?.length && <TableRow><TableCell colSpan={7} className="py-8 text-center text-muted-foreground">No clients yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
       </div>
     </div>
+  );
+}
+
+function DeployAgent({ name, enrollmentKey }: { name: string; enrollmentKey: string }) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const cmd = `$f="$env:TEMP\\meridian-agent.ps1"; Invoke-WebRequest "${origin}/agent/meridian-agent.ps1" -OutFile $f; powershell -ExecutionPolicy Bypass -File $f -Install -Server "${origin}" -EnrollmentKey "${enrollmentKey}"`;
+  return (
+    <Dialog>
+      <DialogTrigger asChild><Button size="sm" variant="outline">Deploy agent</Button></DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader><DialogTitle>Deploy Windows agent — {name}</DialogTitle></DialogHeader>
+        <p className="text-sm text-muted-foreground">Run this in an elevated PowerShell window on each Windows PC or server. It enrolls the machine to this client and checks in every minute.</p>
+        <pre className="whitespace-pre-wrap break-all rounded bg-muted p-3 font-mono text-xs">{cmd}</pre>
+        <div className="flex gap-2">
+          <Button onClick={() => { navigator.clipboard.writeText(cmd); toast.success("Copied"); }}>Copy command</Button>
+          <Button variant="outline" asChild><a href="/agent/meridian-agent.ps1" download>Download script</a></Button>
+        </div>
+        <p className="text-xs text-muted-foreground">Enrollment key: <span className="font-mono">{enrollmentKey}</span> — keep it private. Uninstall with <span className="font-mono">-Uninstall</span>.</p>
+      </DialogContent>
+    </Dialog>
   );
 }

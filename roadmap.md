@@ -1,8 +1,11 @@
 # Roadmap
 - [x] Backend, roles, tenants, devices, alerts schema
 - [x] Sign-in, console shell, overview, clients, devices, alerts
-- [ ] PSA: tickets, time tracking, contracts
-- [ ] Per-seat billing (payments)
-- [ ] Real endpoint agent / RMM integrations (needs provider choice)
+- [x] PSA: tickets (staff + client portal), comments/internal notes, time tracking
+- [x] Client per-seat invoicing (rates, draft invoices from seats + billable hours)
+- [x] Windows PowerShell agent: enroll, 1-min check-in, metrics, auto alerts
+- [x] Remote scripts: library, queue per device, agent runs and reports output
+- [ ] MSP subscriptions (MSPs pay you per seat) — waiting on user to confirm Paddle
+- [ ] Multi-MSP accounts (each MSP its own isolated workspace) — needed before selling to many MSPs
+- [ ] Linux agent
 - [ ] Client user invites & team management
-- [ ] Remote scripts: agent pulls queued PowerShell scripts from console, runs them, reports output
