@@ -14,16 +14,249 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string
+          detail: string | null
+          device_id: string | null
+          id: string
+          severity: Database["public"]["Enums"]["alert_severity"]
+          state: Database["public"]["Enums"]["alert_state"]
+          tenant_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          device_id?: string | null
+          id?: string
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          state?: Database["public"]["Enums"]["alert_state"]
+          tenant_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          device_id?: string | null
+          id?: string
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          state?: Database["public"]["Enums"]["alert_state"]
+          tenant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alerts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devices: {
+        Row: {
+          cpu_percent: number
+          created_at: string
+          device_type: string
+          disk_percent: number
+          external_id: string | null
+          hostname: string
+          id: string
+          ip_address: string | null
+          last_seen: string | null
+          memory_percent: number
+          os: string | null
+          patches_pending: number
+          source: string
+          status: Database["public"]["Enums"]["device_status"]
+          tenant_id: string
+        }
+        Insert: {
+          cpu_percent?: number
+          created_at?: string
+          device_type?: string
+          disk_percent?: number
+          external_id?: string | null
+          hostname: string
+          id?: string
+          ip_address?: string | null
+          last_seen?: string | null
+          memory_percent?: number
+          os?: string | null
+          patches_pending?: number
+          source?: string
+          status?: Database["public"]["Enums"]["device_status"]
+          tenant_id: string
+        }
+        Update: {
+          cpu_percent?: number
+          created_at?: string
+          device_type?: string
+          disk_percent?: number
+          external_id?: string | null
+          hostname?: string
+          id?: string
+          ip_address?: string | null
+          last_seen?: string | null
+          memory_percent?: number
+          os?: string | null
+          patches_pending?: number
+          source?: string
+          status?: Database["public"]["Enums"]["device_status"]
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devices_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integrations: {
+        Row: {
+          created_at: string
+          devices_synced: number
+          id: string
+          label: string
+          last_sync_at: string | null
+          provider: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          devices_synced?: number
+          id?: string
+          label: string
+          last_sync_at?: string | null
+          provider: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          devices_synced?: number
+          id?: string
+          label?: string
+          last_sync_at?: string | null
+          provider?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          tenant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          id: string
+          industry: string | null
+          name: string
+          plan: string
+          primary_contact: string | null
+          seats: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          industry?: string | null
+          name: string
+          plan?: string
+          primary_contact?: string | null
+          seats?: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          industry?: string | null
+          name?: string
+          plan?: string
+          primary_contact?: string | null
+          seats?: number
+          slug?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_tenant: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      alert_severity: "critical" | "warning" | "info"
+      alert_state: "open" | "acknowledged" | "resolved"
+      app_role: "msp_admin" | "technician" | "client_user"
+      device_status: "online" | "warning" | "offline"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +383,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      alert_severity: ["critical", "warning", "info"],
+      alert_state: ["open", "acknowledged", "resolved"],
+      app_role: ["msp_admin", "technician", "client_user"],
+      device_status: ["online", "warning", "offline"],
+    },
   },
 } as const
