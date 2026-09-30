@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity, Bell, Building2, Clock, LayoutDashboard, LogOut, Monitor, Receipt, Terminal, Ticket } from "lucide-react";
+import { Activity, Bell, Building2, Clock, LayoutDashboard, LogOut, Monitor, Receipt, ShieldCheck, Terminal, Ticket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -21,7 +21,7 @@ export function useRoles() {
       const { data: u } = await supabase.auth.getUser();
       const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.user!.id);
       const roles = (data ?? []).map((r) => r.role);
-      return { roles, isStaff: roles.includes("msp_admin") || roles.includes("technician"), isAdmin: roles.includes("msp_admin") };
+      return { roles, isStaff: roles.includes("msp_admin") || roles.includes("technician"), isAdmin: roles.includes("msp_admin"), isSuperAdmin: roles.includes("super_admin") };
     },
   });
 }
@@ -64,6 +64,12 @@ function Shell() {
               <n.icon className="h-4 w-4" /> {n.label}
             </Link>
           ))}
+          {r?.isSuperAdmin && (
+            <Link to="/platform/workspaces"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent">
+              <ShieldCheck className="h-4 w-4" /> Platform admin
+            </Link>
+          )}
         </nav>
         <div className="border-t border-sidebar-border p-3">
           <p className="truncate px-2 text-xs text-muted-foreground">{user.email}</p>

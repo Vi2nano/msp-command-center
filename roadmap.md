@@ -5,7 +5,28 @@
 - [x] Client per-seat invoicing (rates, draft invoices from seats + billable hours)
 - [x] Windows PowerShell agent: enroll, 1-min check-in, metrics, auto alerts
 - [x] Remote scripts: library, queue per device, agent runs and reports output
-- [ ] MSP subscriptions (MSPs pay you per seat) — waiting on user to confirm Paddle
-- [ ] Multi-MSP accounts (each MSP its own isolated workspace) — needed before selling to many MSPs
+- [x] Multi-MSP accounts: `msp_workspaces` + `msp_workspace_members`; client tenants, scripts and integrations belong to a workspace and all staff RLS is workspace-scoped (migration `0003_msp_workspaces`)
+- [x] `super_admin` platform-owner role and platform console at `/platform/workspaces` (list, create, edit, members, usage vs contracted seats/agents)
+- [x] Manual per-MSP platform pricing: contracted seats/agents, price per seat/agent, flat monthly fee, billing mode, billing notes (no payment processing yet)
+- [ ] Stripe for MSP platform billing against `msp_workspaces` (customer/subscription ids, Checkout, Customer Portal, webhooks, manual invoices) — do not reuse client `invoices`
+- [ ] Entitlement enforcement (suspend/limit workspaces that are unpaid or over contract)
+- [ ] MSP self-serve signup that creates its own workspace (today the platform owner creates workspaces and adds members)
+- [ ] Workspace-scoped ticket/invoice numbering (numbers currently come from global sequences)
+- [ ] Replace scheduled-task agent with native Windows service; remote-session helper, signaling and audit
+- [ ] Signed scripts, agent updates, and privileged job policies
 - [ ] Linux agent
 - [ ] Client user invites & team management
+
+## Multi-MSP rollout notes (migration 0003)
+- **Backfill:** before 0003 there was exactly one MSP (every admin/technician saw every tenant). The migration creates one
+  `Primary MSP workspace` (slug `primary`) and assigns every existing tenant, script, integration and every existing
+  `msp_admin`/`technician` user to it, so current access is unchanged. `msp_workspace_id` is `NOT NULL` afterwards and
+  defaults to the creating user's workspace.
+- **Bootstrap the platform owner (manual, once):** run in the Supabase SQL editor
+  `INSERT INTO public.user_roles (user_id, role) SELECT id, 'super_admin' FROM public.profiles WHERE email = 'you@example.com';`
+  The role is never granted automatically.
+- **Onboarding another MSP:** create the workspace in `/platform/workspaces`, have the MSP owner sign up, then add them
+  by email as `msp_admin` on the workspace detail page. Staff without a workspace membership see no MSP data.
+- The first-ever signup still becomes `msp_admin` and now also joins the first workspace that has no members.
+- If you rename the `primary` workspace or split its clients between MSPs later, update `tenants.msp_workspace_id`
+  (and the matching `scripts`/`integrations` rows and memberships) with SQL — there is no UI for moving clients yet.
