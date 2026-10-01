@@ -13,6 +13,7 @@
 - [ ] MSP self-serve signup that creates its own workspace (today the platform owner creates workspaces and adds members)
 - [ ] Workspace-scoped ticket/invoice numbering (numbers currently come from global sequences)
 - [ ] Replace scheduled-task agent with a native Windows service; add an interactive user-session helper, remote-session signaling and audit
+- [ ] Outbound live sessions: agent holds a persistent outbound connection to a relay; technicians get a real-time interactive PowerShell session through the console (no inbound firewall ports, text-only — no screen view), with full session audit logging
 - [ ] Signed scripts, agent updates, and privileged job policies
 - [ ] Linux agent
 - [ ] Client user invites & team management
