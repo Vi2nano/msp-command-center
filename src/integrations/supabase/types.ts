@@ -140,7 +140,6 @@ export type Database = {
           id: string
           label: string
           last_sync_at: string | null
-          msp_workspace_id: string
           provider: string
           status: string
         }
@@ -150,7 +149,6 @@ export type Database = {
           id?: string
           label: string
           last_sync_at?: string | null
-          msp_workspace_id?: string
           provider: string
           status?: string
         }
@@ -160,19 +158,10 @@ export type Database = {
           id?: string
           label?: string
           last_sync_at?: string | null
-          msp_workspace_id?: string
           provider?: string
           status?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "integrations_msp_workspace_id_fkey"
-            columns: ["msp_workspace_id"]
-            isOneToOne: false
-            referencedRelation: "msp_workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       invoices: {
         Row: {
@@ -226,87 +215,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      msp_workspace_members: {
-        Row: {
-          created_at: string
-          id: string
-          user_id: string
-          workspace_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          user_id: string
-          workspace_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          user_id?: string
-          workspace_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "msp_workspace_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "msp_workspace_members_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "msp_workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      msp_workspaces: {
-        Row: {
-          billing_mode: string
-          billing_notes: string | null
-          contracted_agents: number
-          contracted_seats: number
-          created_at: string
-          flat_monthly_fee: number
-          id: string
-          name: string
-          price_per_agent: number
-          price_per_seat: number
-          slug: string
-          updated_at: string
-        }
-        Insert: {
-          billing_mode?: string
-          billing_notes?: string | null
-          contracted_agents?: number
-          contracted_seats?: number
-          created_at?: string
-          flat_monthly_fee?: number
-          id?: string
-          name: string
-          price_per_agent?: number
-          price_per_seat?: number
-          slug: string
-          updated_at?: string
-        }
-        Update: {
-          billing_mode?: string
-          billing_notes?: string | null
-          contracted_agents?: number
-          contracted_seats?: number
-          created_at?: string
-          flat_monthly_fee?: number
-          id?: string
-          name?: string
-          price_per_agent?: number
-          price_per_seat?: number
-          slug?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       profiles: {
         Row: {
@@ -407,7 +315,6 @@ export type Database = {
           created_by: string | null
           description: string | null
           id: string
-          msp_workspace_id: string
           name: string
         }
         Insert: {
@@ -416,7 +323,6 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
-          msp_workspace_id?: string
           name: string
         }
         Update: {
@@ -425,18 +331,9 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
-          msp_workspace_id?: string
           name?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "scripts_msp_workspace_id_fkey"
-            columns: ["msp_workspace_id"]
-            isOneToOne: false
-            referencedRelation: "msp_workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tenants: {
         Row: {
@@ -445,7 +342,6 @@ export type Database = {
           hourly_rate: number
           id: string
           industry: string | null
-          msp_workspace_id: string
           name: string
           plan: string
           price_per_seat: number
@@ -459,7 +355,6 @@ export type Database = {
           hourly_rate?: number
           id?: string
           industry?: string | null
-          msp_workspace_id?: string
           name: string
           plan?: string
           price_per_seat?: number
@@ -473,7 +368,6 @@ export type Database = {
           hourly_rate?: number
           id?: string
           industry?: string | null
-          msp_workspace_id?: string
           name?: string
           plan?: string
           price_per_seat?: number
@@ -481,15 +375,7 @@ export type Database = {
           seats?: number
           slug?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "tenants_msp_workspace_id_fkey"
-            columns: ["msp_workspace_id"]
-            isOneToOne: false
-            referencedRelation: "msp_workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       ticket_comments: {
         Row: {
@@ -669,12 +555,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      admin_can_access_tenant: {
-        Args: { _tenant_id: string; _user_id: string }
-        Returns: boolean
-      }
       current_tenant: { Args: { _user_id: string }; Returns: string }
-      current_workspace: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -683,48 +564,11 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
-      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
-      platform_assign_workspace_member: {
-        Args: {
-          _email: string
-          _role: Database["public"]["Enums"]["app_role"]
-          _workspace_id: string
-        }
-        Returns: string
-      }
-      platform_remove_workspace_member: {
-        Args: { _user_id: string; _workspace_id: string }
-        Returns: undefined
-      }
-      platform_workspace_members: {
-        Args: { _workspace_id: string }
-        Returns: {
-          email: string
-          full_name: string
-          joined_at: string
-          roles: string[]
-          user_id: string
-        }[]
-      }
-      platform_workspace_usage: {
-        Args: never
-        Returns: {
-          agent_count: number
-          client_count: number
-          device_count: number
-          staff_count: number
-          workspace_id: string
-        }[]
-      }
-      staff_can_access_tenant: {
-        Args: { _tenant_id: string; _user_id: string }
-        Returns: boolean
-      }
     }
     Enums: {
       alert_severity: "critical" | "warning" | "info"
       alert_state: "open" | "acknowledged" | "resolved"
-      app_role: "msp_admin" | "technician" | "client_user" | "super_admin"
+      app_role: "msp_admin" | "technician" | "client_user"
       device_status: "online" | "warning" | "offline"
     }
     CompositeTypes: {
@@ -855,7 +699,7 @@ export const Constants = {
     Enums: {
       alert_severity: ["critical", "warning", "info"],
       alert_state: ["open", "acknowledged", "resolved"],
-      app_role: ["msp_admin", "technician", "client_user", "super_admin"],
+      app_role: ["msp_admin", "technician", "client_user"],
       device_status: ["online", "warning", "offline"],
     },
   },
