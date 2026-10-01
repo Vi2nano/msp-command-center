@@ -29,6 +29,13 @@
       "when": 1790763600000,
       "tag": "0003_msp_workspaces",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790894507002,
+      "tag": "0004_invites_and_limits",
+      "breakpoints": true
     }
   ]
 }
