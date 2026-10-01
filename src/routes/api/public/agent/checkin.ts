@@ -34,6 +34,8 @@ export const Route = createFileRoute("/api/public/agent/checkin")({
         if (!parsed.success) return json({ error: "invalid body" }, 400);
         const m = Object.fromEntries(Object.entries(parsed.data).filter(([, v]) => v !== undefined)) as { cpu_percent: number; memory_percent: number; disk_percent: number } & Record<string, string | number>;
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: t } = await supabaseAdmin.from("tenants").select("msp_workspaces(status)").eq("id", device.tenant_id).maybeSingle();
+        const suspended = t?.msp_workspaces?.status === "suspended";
 
         const hot = m.cpu_percent > 95 || m.memory_percent > 95 || m.disk_percent > 90;
         await supabaseAdmin.from("devices").update({
@@ -42,6 +44,9 @@ export const Route = createFileRoute("/api/public/agent/checkin")({
 
         await raise(supabaseAdmin, device, "disk", "critical", "Disk above 90%", m.disk_percent > 90);
         await raise(supabaseAdmin, device, "memory", "warning", "Memory above 95%", m.memory_percent > 95);
+
+        // Suspended workspaces keep reporting health but receive no scripts.
+        if (suspended) return json({ jobs: [], next_checkin_seconds: 300 });
 
         // Hand out queued scripts (max 5 per check-in) and mark them running.
         const { data: jobs } = await supabaseAdmin.from("script_runs")

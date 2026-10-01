@@ -20,8 +20,9 @@ export const Route = createFileRoute("/api/public/agent/enroll")({
         const b = parsed.data;
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: tenant } = await supabaseAdmin
-          .from("tenants").select("id").eq("enrollment_key", b.enrollment_key).maybeSingle();
+          .from("tenants").select("id, msp_workspaces(status)").eq("enrollment_key", b.enrollment_key).maybeSingle();
         if (!tenant) return json({ error: "invalid enrollment key" }, 401);
+        if (tenant.msp_workspaces?.status === "suspended") return json({ error: "workspace suspended" }, 403);
 
         const token = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
         const hash = await sha256(token);
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/api/public/agent/enroll")({
           const { data, error } = await supabaseAdmin.from("devices")
             .insert({ ...fields, tenant_id: tenant.id, external_id: b.external_id ?? null })
             .select("id").single();
+          if (error?.message.includes("agent limit reached")) return json({ error: "agent limit reached" }, 403);
           if (error) return json({ error: "enroll failed" }, 500);
           deviceId = data.id;
         }

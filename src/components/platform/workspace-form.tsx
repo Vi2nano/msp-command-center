@@ -155,6 +155,38 @@ export function WorkspaceForm({
           onChange={(e) => setF({ ...f, billing_notes: e.target.value })}
         />
       </div>
+      <div className="grid gap-3 rounded-md border border-border p-3 sm:grid-cols-2">
+        <div>
+          <Label>Account status</Label>
+          <Select value={f.status ?? "active"} onValueChange={(v) => setF({ ...f, status: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <label className="flex items-center gap-2 self-end pb-2 text-sm">
+          <input
+            type="checkbox"
+            checked={!!f.enforce_limits}
+            onChange={(e) => setF({ ...f, enforce_limits: e.target.checked })}
+          />
+          Block new seats/agents beyond contract
+        </label>
+        {f.status === "suspended" && (
+          <div className="sm:col-span-2">
+            <Label>Suspension reason (shown to the MSP)</Label>
+            <Input
+              value={f.suspended_reason ?? ""}
+              onChange={(e) => setF({ ...f, suspended_reason: e.target.value })}
+            />
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground sm:col-span-2">
+          Suspended MSPs can still sign in and view data, but cannot enroll agents, run scripts or invite users.
+        </p>
+      </div>
       <p className="text-sm text-muted-foreground">
         Contracted monthly total: <span className="font-mono text-foreground">{money(total)}</span>{" "}
         (flat fee + seats × seat price + agents × agent price)

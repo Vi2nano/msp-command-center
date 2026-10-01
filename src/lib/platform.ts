@@ -18,6 +18,9 @@ export type MspWorkspaceInput = Pick<
   | "flat_monthly_fee"
   | "billing_mode"
   | "billing_notes"
+  | "status"
+  | "enforce_limits"
+  | "suspended_reason"
 >;
 export type WorkspaceUsage =
   Database["public"]["Functions"]["platform_workspace_usage"]["Returns"][number];
@@ -39,6 +42,9 @@ export const emptyWorkspace: MspWorkspaceInput = {
   flat_monthly_fee: 0,
   billing_mode: "manual_invoice",
   billing_notes: "",
+  status: "active",
+  enforce_limits: false,
+  suspended_reason: "",
 };
 
 export const USAGE_LABELS = {
