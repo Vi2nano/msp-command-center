@@ -39,7 +39,7 @@ function TeamPage() {
 
   const invite = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc("invite_user", { _email: email, _role: role, _tenant_id: role === "client_user" ? tenant : undefined });
+      const { data, error } = await supabase.rpc("invite_user", role === "client_user" ? { _email: email, _role: role, _tenant_id: tenant } : { _email: email, _role: role });
       if (error) throw error; return data;
     },
     onSuccess: (res) => {
