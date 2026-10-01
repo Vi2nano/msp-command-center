@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity, Bell, Building2, Clock, LayoutDashboard, LogOut, Monitor, Receipt, ShieldCheck, Terminal, Ticket } from "lucide-react";
+import { Activity, AlertTriangle, Bell, Building2, Clock, LayoutDashboard, LogOut, Monitor, Receipt, ShieldCheck, Terminal, Ticket, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +35,29 @@ const nav = [
   { to: "/time", label: "Time", icon: Clock, staff: true },
   { to: "/scripts", label: "Scripts", icon: Terminal, staff: true },
   { to: "/billing", label: "Billing", icon: Receipt },
-] as { to: string; label: string; icon: typeof Bell; staff?: boolean }[];
+  { to: "/team", label: "Team", icon: Users, admin: true },
+] as { to: string; label: string; icon: typeof Bell; staff?: boolean; admin?: boolean }[];
+
+function WorkspaceBanner() {
+  const { data } = useQuery({
+    queryKey: ["workspace-status"],
+    queryFn: async () => (await supabase.rpc("my_workspace_status")).data?.[0] ?? null,
+  });
+  if (!data) return null;
+  const msgs: string[] = [];
+  if (data.status === "suspended") msgs.push(`Your account is suspended${data.suspended_reason ? `: ${data.suspended_reason}` : ""}. Agent enrollment, scripts and invites are paused.`);
+  else if (data.enforce_limits) {
+    if (data.staff_count >= data.contracted_seats) msgs.push(`All ${data.contracted_seats} staff seats are in use.`);
+    if (data.agent_count >= data.contracted_agents) msgs.push(`All ${data.contracted_agents} agent licenses are in use — new devices can't enroll.`);
+  }
+  if (!msgs.length) return null;
+  return (
+    <div className="mb-6 flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+      <div>{msgs.map((m) => <p key={m}>{m}</p>)}<p className="text-xs text-muted-foreground">Contact your Meridian account owner to change your plan.</p></div>
+    </div>
+  );
+}
 
 function Shell() {
   const { user } = Route.useRouteContext();
@@ -57,7 +79,7 @@ function Shell() {
           <Activity className="h-5 w-5 text-primary" /> Meridian
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {nav.filter((n) => !n.staff || r?.isStaff).map((n) => (
+          {nav.filter((n) => (!n.staff || r?.isStaff) && (!n.admin || r?.isAdmin)).map((n) => (
             <Link key={n.to} to={n.to as "/dashboard"}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
               activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}>
@@ -79,7 +101,7 @@ function Shell() {
           </Button>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto p-8"><Outlet /></main>
+      <main className="flex-1 overflow-auto p-8">{r?.isStaff && <WorkspaceBanner />}<Outlet /></main>
     </div>
   );
 }

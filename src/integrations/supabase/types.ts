@@ -174,6 +174,54 @@ export type Database = {
           },
         ]
       }
+      invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          tenant_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          invited_by?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          tenant_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          tenant_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invites_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invites_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "msp_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           created_at: string
@@ -270,12 +318,15 @@ export type Database = {
           contracted_agents: number
           contracted_seats: number
           created_at: string
+          enforce_limits: boolean
           flat_monthly_fee: number
           id: string
           name: string
           price_per_agent: number
           price_per_seat: number
           slug: string
+          status: string
+          suspended_reason: string | null
           updated_at: string
         }
         Insert: {
@@ -284,12 +335,15 @@ export type Database = {
           contracted_agents?: number
           contracted_seats?: number
           created_at?: string
+          enforce_limits?: boolean
           flat_monthly_fee?: number
           id?: string
           name: string
           price_per_agent?: number
           price_per_seat?: number
           slug: string
+          status?: string
+          suspended_reason?: string | null
           updated_at?: string
         }
         Update: {
@@ -298,12 +352,15 @@ export type Database = {
           contracted_agents?: number
           contracted_seats?: number
           created_at?: string
+          enforce_limits?: boolean
           flat_monthly_fee?: number
           id?: string
           name?: string
           price_per_agent?: number
           price_per_seat?: number
           slug?: string
+          status?: string
+          suspended_reason?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -673,6 +730,10 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      apply_invite: {
+        Args: { _invite_id: string; _user_id: string }
+        Returns: undefined
+      }
       current_tenant: { Args: { _user_id: string }; Returns: string }
       current_workspace: { Args: { _user_id: string }; Returns: string }
       has_role: {
@@ -682,8 +743,30 @@ export type Database = {
         }
         Returns: boolean
       }
+      invite_user: {
+        Args: {
+          _email: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _tenant_id?: string
+        }
+        Returns: string
+      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      my_workspace_status: {
+        Args: never
+        Returns: {
+          agent_count: number
+          contracted_agents: number
+          contracted_seats: number
+          enforce_limits: boolean
+          name: string
+          staff_count: number
+          status: string
+          suspended_reason: string
+          workspace_id: string
+        }[]
+      }
       platform_assign_workspace_member: {
         Args: {
           _email: string
@@ -716,9 +799,23 @@ export type Database = {
           workspace_id: string
         }[]
       }
+      remove_team_member: { Args: { _user_id: string }; Returns: undefined }
       staff_can_access_tenant: {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
+      }
+      workspace_agent_count: { Args: { _ws: string }; Returns: number }
+      workspace_staff_count: { Args: { _ws: string }; Returns: number }
+      workspace_team: {
+        Args: never
+        Returns: {
+          email: string
+          full_name: string
+          roles: string[]
+          tenant_id: string
+          tenant_name: string
+          user_id: string
+        }[]
       }
     }
     Enums: {

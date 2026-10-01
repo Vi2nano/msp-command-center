@@ -19,6 +19,7 @@ import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDevicesRouteImport } from './routes/_authenticated/devices'
 import { Route as AuthenticatedScriptsRouteImport } from './routes/_authenticated/scripts'
+import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
 import { Route as AuthenticatedTimeRouteImport } from './routes/_authenticated/time'
 import { Route as AuthenticatedDevicesIdRouteImport } from './routes/_authenticated/devices.$id'
@@ -76,6 +77,11 @@ const AuthenticatedDevicesRoute = AuthenticatedDevicesRouteImport.update({
 const AuthenticatedScriptsRoute = AuthenticatedScriptsRouteImport.update({
   id: '/scripts',
   path: '/scripts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/devices': typeof AuthenticatedDevicesRouteWithChildren
   '/scripts': typeof AuthenticatedScriptsRoute
+  '/team': typeof AuthenticatedTeamRoute
   '/tickets': typeof AuthenticatedTicketsRouteWithChildren
   '/time': typeof AuthenticatedTimeRoute
   '/devices/$id': typeof AuthenticatedDevicesIdRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/devices': typeof AuthenticatedDevicesRouteWithChildren
   '/scripts': typeof AuthenticatedScriptsRoute
+  '/team': typeof AuthenticatedTeamRoute
   '/tickets': typeof AuthenticatedTicketsRouteWithChildren
   '/time': typeof AuthenticatedTimeRoute
   '/devices/$id': typeof AuthenticatedDevicesIdRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/devices': typeof AuthenticatedDevicesRouteWithChildren
   '/_authenticated/scripts': typeof AuthenticatedScriptsRoute
+  '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/tickets': typeof AuthenticatedTicketsRouteWithChildren
   '/_authenticated/time': typeof AuthenticatedTimeRoute
   '/_authenticated/devices/$id': typeof AuthenticatedDevicesIdRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/devices'
     | '/scripts'
+    | '/team'
     | '/tickets'
     | '/time'
     | '/devices/$id'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/devices'
     | '/scripts'
+    | '/team'
     | '/tickets'
     | '/time'
     | '/devices/$id'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/devices'
     | '/_authenticated/scripts'
+    | '/_authenticated/team'
     | '/_authenticated/tickets'
     | '/_authenticated/time'
     | '/_authenticated/devices/$id'
@@ -339,6 +351,13 @@ declare module '@tanstack/react-router' {
       path: '/scripts'
       fullPath: '/scripts'
       preLoaderRoute: typeof AuthenticatedScriptsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/team': {
+      id: '/_authenticated/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AuthenticatedTeamRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tickets': {
@@ -443,6 +462,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDevicesRoute: typeof AuthenticatedDevicesRouteWithChildren
   AuthenticatedScriptsRoute: typeof AuthenticatedScriptsRoute
+  AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRouteWithChildren
   AuthenticatedTimeRoute: typeof AuthenticatedTimeRoute
 }
@@ -454,6 +474,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDevicesRoute: AuthenticatedDevicesRouteWithChildren,
   AuthenticatedScriptsRoute: AuthenticatedScriptsRoute,
+  AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedTicketsRoute: AuthenticatedTicketsRouteWithChildren,
   AuthenticatedTimeRoute: AuthenticatedTimeRoute,
 }

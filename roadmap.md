@@ -9,14 +9,14 @@
 - [x] `super_admin` platform-owner role and platform console at `/platform/workspaces` (list, create, edit, members, usage vs contracted seats/agents)
 - [x] Manual per-MSP platform pricing: contracted seats/agents, price per seat/agent, flat monthly fee, billing mode, billing notes (no payment processing yet)
 - [ ] Stripe for MSP platform billing against `msp_workspaces` (customer/subscription ids, Checkout, Customer Portal, webhooks, manual invoices) — do not reuse client `invoices`
-- [ ] Entitlement enforcement (suspend/limit workspaces that are unpaid or over contract)
+- [x] Entitlement enforcement: workspace status (active/suspended) + optional contract limits on seats and agents
 - [ ] MSP self-serve signup that creates its own workspace (today the platform owner creates workspaces and adds members)
 - [ ] Workspace-scoped ticket/invoice numbering (numbers currently come from global sequences)
 - [ ] Replace scheduled-task agent with a native Windows service; add an interactive user-session helper, remote-session signaling and audit
 - [ ] Outbound live sessions: agent holds a persistent outbound connection to a relay; technicians get a real-time interactive PowerShell session through the console (no inbound firewall ports, text-only — no screen view), with full session audit logging
 - [ ] Signed scripts, agent updates, and privileged job policies
 - [ ] Linux agent
-- [ ] Client user invites & team management
+- [x] Client user invites & team management (/team)
 
 Remote desktop will require the native service and interactive user-session helper, with outbound signaling/relay connections rather than inbound VNC ports. The current PowerShell agent only checks in and executes queued scripts; it does not provide remote control.
 
