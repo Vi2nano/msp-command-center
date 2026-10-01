@@ -170,6 +170,9 @@ function WorkspaceDetail() {
             flat_monthly_fee: Number(w.flat_monthly_fee),
             billing_mode: w.billing_mode,
             billing_notes: w.billing_notes ?? "",
+            status: w.status,
+            enforce_limits: w.enforce_limits,
+            suspended_reason: w.suspended_reason ?? "",
           }}
           submitLabel="Save changes"
           pending={save.isPending}
